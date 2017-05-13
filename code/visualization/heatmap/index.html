@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="text/javascript" src="data/1.js"></script> 
+    <script type="text/javascript" src="data/2.js"></script> 
+    <script type="text/javascript" src="data/3.js"></script> 
+    <script type="text/javascript" src="data/4.js"></script> 
+    <script type="text/javascript" src="data/5.js"></script> 
+    <script type="text/javascript" src="data/6.js"></script>
+    <script type="text/javascript" src="data/7.js"></script>
+    <script type="text/javascript" src="data/8.js"></script>
+    <script type="text/javascript" src="data/9.js"></script>
+    <script type="text/javascript" src="data/10.js"></script>
+    <script type="text/javascript" src="data/11.js"></script> 
+    <script type="text/javascript" src="data/12.js"></script>
+    <script type="text/javascript" src="data/13.js"></script>
+    <script type="text/javascript" src="data/14.js"></script>
+    <script type="text/javascript" src="data/15.js"></script>
+    <script type="text/javascript" src="data/16.js"></script>
+    <script type="text/javascript" src="data/17.js"></script>
+    <script type="text/javascript" src="data/18.js"></script>
+    <script type="text/javascript" src="data/19.js"></script>
+    <script type="text/javascript" src="data/20.js"></script>
+    <script type="text/javascript" src="data/21.js"></script>
+
+    <script type="text/javascript" src="data/truth.js"></script> 
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Virtualitics Ship Finder</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      var known = [
+        [36.8794, 122.4432],
+        [36.7973, 122.5711],
+        [36.579, 122.8391],
+        [35.5774, 123.8933],
+        [35.3793, 124.1084],
+        [35.0859, 124.41],
+        [34.8529, 124.6486],
+        [34.6827, 124.8218],
+        [34.3801, 125.1363],
+        // [33.8118, 126.7932],
+        // [34.2436, 127.8369],
+        // [34.6377, 128.7927]
+      ];
+
+      var percentColors = [
+        { pct: 0.0, color: { r: 77, g: 97, b: 156 } },
+        { pct: 0.5, color: { r: 0xff, g: 128, b: 0 } },
+        { pct: 1.0, color: { r: 0xff, g: 0x00, b: 0 } } 
+      ];
+
+      function hsl_col_perc(percent) {
+        var start = 225;
+        var end = 360;
+        var a = percent,
+            b = (end - start) * a,
+            c = b + start;
+
+        // Return a CSS HSL string
+        return 'hsl('+c+', 100%, 50%)';
+      }
+
+      var getColorForPercentage = function(pct) {
+        for (var i = 1; i < percentColors.length - 1; i++) {
+            if (pct <= percentColors[i].pct) {
+                break;
+            }
+        }
+        var lower = percentColors[i - 1];
+        var upper = percentColors[i];
+        var range = upper.pct - lower.pct;
+        var rangePct = (pct - lower.pct) / range;
+        var pctLower = 1 - rangePct;
+        var pctUpper = rangePct;
+        var color = {
+            r: Math.floor(lower.color.r * pctLower + upper.color.r * pctUpper),
+            g: Math.floor(lower.color.g * pctLower + upper.color.g * pctUpper),
+            b: Math.floor(lower.color.b * pctLower + upper.color.b * pctUpper)
+        };
+        return 'rgb(' + [color.r, color.g, color.b].join(',') + ')';
+        // or output as hex if preferred
+    }  
+
+      function initMap() {
+        // Create the map.
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 6,
+          center: {lat: 35.3793, lng: 124.1084},
+          mapTypeId: 'terrain',
+          mapTypeId: 'satellite',
+          streetViewControl: false,
+          labels: true
+        });
+
+        if (true) {
+          for (var loc_id in known) {
+            loc = known[loc_id];
+            var point = new google.maps.Circle({
+              strokeColor: 'rgb(0,0,0)',
+              strokeOpacity: 1,
+              strokeWeight: 0,
+              fillColor: 'rgb(0,0,0)',
+              fillOpacity: 1,
+              map: map,
+              center: {lat: loc[0], lng: loc[1]},
+              radius: 5000
+            });
+          }
+        }
+
+        if (false) {
+          for (var loc_id in truth) {
+            loc = truth[loc_id];
+            var point = new google.maps.Circle({
+              strokeColor: 'rgb(0,0,0)',
+              strokeOpacity: 1,
+              strokeWeight: 0,
+              fillColor: 'rgb(0,0,0)',
+              fillOpacity: 1,
+              map: map,
+              center: {lat: loc[0], lng: loc[1]},
+              radius: 1500
+            });
+          }
+        }
+
+        var grid = grid2;
+        for (var loc_id in grid) {
+          loc = grid[loc_id];
+          var point = new google.maps.Circle({
+            strokeColor: getColorForPercentage(loc[2]),
+            strokeOpacity: 1,
+            strokeWeight: 0,
+            fillColor: getColorForPercentage(loc[2]),
+            fillOpacity: 2 * loc[2],
+            map: map,
+            center: {lat: loc[0], lng: loc[1]},
+            radius: 7000
+          });
+        }
+
+      }
+    </script>
+    <script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBCFRuLlbe_SDVh9tzlMSf7c-i2YYZWN-Y&libraries=visualization&callback=initMap">
+    </script>
+  </body>
+</html>
